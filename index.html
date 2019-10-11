@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login with SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://sdk.accountkit.com/en_US/sdk.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Migrate from FB Account Kit to Twilio Verify</h2>
+      <p>Facebook announced <a href="https://developers.facebook.com/blog/post/2019/09/09/account-kit-services-no-longer-available-starting-march">Account Kit deprecation</a> on September 9, 2019.</p>
+      <p>This guide will show you how to replace Account Kit functionality with <a href="https://twilio.com/docs/verify/api">Twilio Verify</a></p>
+      <div class="content">
+        <p><a href="https://twilio.com/docs/verify/api">Twilio Verify</a> SMS login:</p>
+        <form class="form-inline">
+          <input value="+1" id="country_code" class="form-control"/>
+          <input placeholder="phone number" id="phone_number" class="form-control"/>
+          <input type="button" onclick="smsLoginTwilio();" class="btn btn-primary" value="Login via SMS" />
+        </form>
+      </div>
+      <div class="modal" id="verification_modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="result-message">
+                  </div>
+                  <div class="input-group input-group-lg">
+                    <input type="text" class="form-control input-lg" id="verification_code" placeholder="Enter the token sent to your device">
+                    <span class="input-group-btn">
+                      <button onclick="smsVerifyTwilio();" class="btn btn-primary btn-lg" type="submit">Verify</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    </div>
+  </body>
+  <script>
+    var cc = null;
+    var pn = null;
+
+    function flashStatus(alertType, message) {
+      var content = $(".result-message");
+      content.empty();
+      content.append(`<div class="alert alert-${alertType}" role="alert">${message}</div>`);
+    }
+
+    function smsLoginTwilio() {
+      var countryCode = $("#country_code").val().replace(/\W/g, ''); // strip special characters
+      var phoneNumber = $("#phone_number").val().replace(/\W/g, ''); // strip special characters
+
+      // save for checking
+      cc = countryCode;
+      pn = phoneNumber;
+
+      // Twilio functions do not accept multipart/form-data
+      const data = new URLSearchParams();
+      data.append("country_code", countryCode);
+      data.append("phone_number", phoneNumber);
+
+      // Create your own Twilio Function 
+      // https://www.twilio.com/console/functions/manage
+      // Template: https://github.com/robinske/fb-account-kit-migration/blob/master/start.js
+      fetch("https://berserk-engine-4152.twil.io/start", {
+          method: 'POST',
+          body: data
+        })
+        .then(response => {
+          var content = $(".result-message");
+          content.empty();
+          $(".modal").modal("show");
+          return response.json()
+        })
+        .then((json) => {
+          console.log(json);
+          if (json.success) {
+            console.log("Successfully sent token.")
+          } else {
+            console.log("Error sending token.")
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function smsVerifyTwilio() {
+      var code = $("#verification_code").val();
+
+      // Twilio functions do not accept multipart/form-data
+      const data = new URLSearchParams();
+      data.append("country_code", cc);
+      data.append("phone_number", pn);
+      data.append("verification_code", code);
+
+      // Create your own Twilio Function 
+      // https://www.twilio.com/console/functions/manage
+      // Template: https://github.com/robinske/fb-account-kit-migration/blob/master/check.js
+      fetch("https://berserk-engine-4152.twil.io/check", {
+          method: 'POST',
+          body: data
+        })
+        .then(response => response.json())
+        .then((json) => {
+          if (json.success) {
+            flashStatus("success", "Success!");
+            console.log("Successfully verified the token.");
+          } else {
+            flashStatus("danger", json.message);
+            $("#verification_code").val("");
+            console.log("Incorrect token.")
+          }
+        })
+        .catch((err) => {
+          var content = $(".result-message");
+          console.log(err);
+        });
+    }
+  </script>
+</html>
+    
