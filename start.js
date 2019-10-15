@@ -35,7 +35,7 @@ exports.handler = function(context, event, callback) {
   let pn = `${event.phone_number.replace(/\W/g, '')}`;
   let to = `+${cc + pn}`
 
-  let channel = (typeof event.channel === 'undefined') ? "sms" : x;
+  let channel = (typeof event.channel === 'undefined') ? "sms" : event.channel;
           
   client.verify.services(service)
     .verifications
