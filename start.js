@@ -22,21 +22,30 @@ exports.handler = function(context, event, callback) {
   response.appendHeader('Content-Type', 'application/json');
   
   // CORS support
-  response.appendHeader('Access-Control-Allow-Origin', '*');
+  response.appendHeader('Access-Control-Allow-Origin', '*'); // * for testing, restrict to your website in prod!
   response.appendHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.appendHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   const client = context.getTwilioClient();
   const service = context.VERIFY_SERVICE_SID
 
-  // strip special characters, construct E.164 number
-  // see: https://www.twilio.com/docs/glossary/what-e164
-  let cc = `${event.country_code.replace(/\W/g, '')}`;
-  let pn = `${event.phone_number.replace(/\W/g, '')}`;
-  let to = `+${cc + pn}`
-
   let channel = (typeof event.channel === 'undefined') ? "sms" : event.channel;
-          
+  let to = event.phone_number;
+
+  // Optional, lookup/format phone number before sending it to the Verify channel
+  // client.lookups.phoneNumbers(event.phone_number).fetch()
+  //   .then(pn => {
+  //     to = pn.phoneNumber;
+  //   })
+  //   .catch(error => {
+  //     response.setBody({
+  //       "success": false,
+  //       "message": error
+  //     })
+  //     response.setStatusCode(400);
+  //     callback(null, response);
+  //   })
+
   client.verify.services(service)
     .verifications
     .create({to: to, channel: channel})

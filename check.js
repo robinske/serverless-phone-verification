@@ -29,12 +29,7 @@ exports.handler = function(context, event, callback) {
   const client = context.getTwilioClient();
   const service = context.VERIFY_SERVICE_SID
 
-  // strip special characters, construct E.164 number
-  // see: https://www.twilio.com/docs/glossary/what-e164
-  let cc = `${event.country_code.replace(/\W/g, '')}`;
-  let pn = `${event.phone_number.replace(/\W/g, '')}`;
-  let to = `+${cc + pn}`
-
+  let to = event.phone_number;
   let code = event.verification_code;
           
   client.verify.services(service)
