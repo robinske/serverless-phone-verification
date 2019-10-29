@@ -23,11 +23,13 @@
   <body>
     <div class="container">
       <h2>Twilio Verify</h2>
-      <p>This example shows how to deploy<a href="https://twilio.com/docs/verify/api">Twilio Verify</a> and Twilio functions for serverless phone verification.</p>
+      <p>This example shows how to deploy <a href="https://twilio.com/docs/verify/api">Twilio Verify</a> and Twilio functions for serverless phone verification.</p>
       <div class="content">
-        <p><a href="https://twilio.com/docs/verify/api">Twilio Verify</a> SMS login:</p>
+        <p>
+          <a href="https://twilio.com/docs/verify/api">Twilio Verify</a> SMS login.
+          Enter your phone number using <a href="https://www.twilio.com/docs/glossary/what-e164">E.164 format.</a>
+        </p>
         <form class="form-inline">
-          <input value="+1" id="country_code" class="form-control"/>
           <input placeholder="phone number" id="phone_number" class="form-control"/>
           <input type="button" onclick="smsLoginTwilio();" class="btn btn-primary" value="Login via SMS" />
         </form>
@@ -52,6 +54,12 @@
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
       </div><!-- /.modal -->
+    </div><!-- /.container -->
+    <br/>
+    <div class="container">
+      <a href="https://glitch.com/edit/#!/remix/atlantic-vault">
+        <img src="https://cdn.glitch.com/2bdfb3f8-05ef-4035-a06e-2043962a3a13%2Fremix%402x.png?1513093958726" alt="remix this" height="33">
+      </a>
     </div>
   </body>
   <script>
@@ -65,21 +73,17 @@
     }
 
     function smsLoginTwilio() {
-      var countryCode = $("#country_code").val().replace(/\W/g, ''); // strip special characters
-      var phoneNumber = $("#phone_number").val().replace(/\W/g, ''); // strip special characters
+      var phoneNumber = $("#phone_number").val();
 
       // save for checking
-      cc = countryCode;
       pn = phoneNumber;
 
       // Twilio functions do not accept multipart/form-data
       const data = new URLSearchParams();
-      data.append("country_code", countryCode);
       data.append("phone_number", phoneNumber);
 
       // Create your own Twilio Function 
       // https://www.twilio.com/console/functions/manage
-      // Template: https://github.com/robinske/serverless-phone-verification/blob/master/start.js
       fetch("https://berserk-engine-4152.twil.io/start", {
           method: 'POST',
           body: data
@@ -108,13 +112,11 @@
 
       // Twilio functions do not accept multipart/form-data
       const data = new URLSearchParams();
-      data.append("country_code", cc);
       data.append("phone_number", pn);
       data.append("verification_code", code);
 
       // Create your own Twilio Function 
       // https://www.twilio.com/console/functions/manage
-      // Template: https://github.com/robinske/serverless-phone-verification/blob/master/check.js
       fetch("https://berserk-engine-4152.twil.io/check", {
           method: 'POST',
           body: data
@@ -137,4 +139,3 @@
     }
   </script>
 </html>
-    
