@@ -6,7 +6,7 @@ This code shows how to use [Twilio Verify](https://twilio.com/docs/verify/api) a
 
 ![phone-verification-gif](demo.gif)
 
-### Running this project
+## Running this project
 
 Clone the repo and copy `.env.example` to `.env`. Fill in the environment variables with your own Twilio Account SID, Auth Token, and Verify Service SID. 
 
@@ -15,3 +15,7 @@ Run the project with npm:
 ```
 npm start
 ```
+
+## License
+
+MIT
