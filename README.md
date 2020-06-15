@@ -6,4 +6,4 @@ This code shows how to use [Twilio Verify](https://twilio.com/docs/verify/api) a
 
 **Check out a [demo on Glitch](https://atlantic-vault.glitch.me/)**
 
-![phone-verification-gif](verification-demo.gif)
+![phone-verification-gif](demo.gif)
