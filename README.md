@@ -4,7 +4,7 @@ This code shows how to use [Twilio Verify](https://twilio.com/docs/verify/api) a
 
 [Follow the tutorial to deploy your own on the Twilio Blog](https://www.twilio.com/blog/serverless-phone-verification). **Check out a [demo on Glitch](https://atlantic-vault.glitch.me/)**.
 
-![phone-verification-gif](demo.gif)
+![phone-verification-gif](phone-verification.gif)
 
 ## Running this project
 
